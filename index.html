@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLACEMENT TEST SALVO GROUP</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .level-selection {
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .level-selection h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        
+        .level-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .level-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .level-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .level-btn.a1 { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .level-btn.a2 { background: linear-gradient(135deg, #8BC34A, #7cb342); }
+        .level-btn.b1 { background: linear-gradient(135deg, #FFC107, #ffb300); color: #333; }
+        .level-btn.b2 { background: linear-gradient(135deg, #FF9800, #f57c00); }
+        .level-btn.c1 { background: linear-gradient(135deg, #FF5722, #e64a19); }
+        .level-btn.c2 { background: linear-gradient(135deg, #E91E63, #c2185b); }
+        .level-btn.all { background: linear-gradient(135deg, #9C27B0, #7b1fa2); grid-column: span 2; }
+        
+        .quiz-container {
+            display: none;
+            padding: 40px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .question-counter {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .question-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .question-text {
+            font-size: 1.4em;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .option.correct {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .option.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+        
+        .option.selected .option-letter,
+        .option.correct .option-letter,
+        .option.wrong .option-letter {
+            background: white;
+            color: #667eea;
+        }
+        
+        .option.correct .option-letter {
+            color: #4CAF50;
+        }
+        
+        .option.wrong .option-letter {
+            color: #f44336;
+        }
+        
+        .btn-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .explanation {
+            display: none;
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .explanation h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .explanation p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        .result-container {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .score-number {
+            font-size: 3em;
+            font-weight: 800;
+            color: #667eea;
+        }
+        
+        .score-label {
+            font-size: 1.2em;
+            color: #666;
+        }
+        
+        .level-result {
+            font-size: 2em;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .promo-box {
+            background: linear-gradient(135deg, #FF6B6B, #ee5a24);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .promo-box h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        
+        .promo-box a {
+            display: inline-block;
+            background: white;
+            color: #ee5a24;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2em;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .promo-box a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h4 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PLACEMENT TEST SALVO GROUP</h1>
+            <p>Tes Penempatan Level Grammar Bahasa Inggris</p>
+        </div>
+        
+        <div class="level-selection" id="levelSelection">
+            <h2>Pilih Level yang Ingin Anda Kerjakan</h2>
+            <div class="level-buttons">
+                <button class="level-btn a1" onclick="startQuiz('A1')">A1 Beginner</button>
+                <button class="level-btn a2" onclick="startQuiz('A2')">A2 Elementary</button>
+                <button class="level-btn b1" onclick="startQuiz('B1')">B1 Intermediate</button>
+                <button class="level-btn b2" onclick="startQuiz('B2')">B2 Upper-Intermediate</button>
+                <button class="level-btn c1" onclick="startQuiz('C1')">C1 Advanced</button>
+                <button class="level-btn c2" onclick="startQuiz('C2')">C2 Mastery</button>
+                <button class="level-btn all" onclick="startQuiz('ALL')">SEMUA LEVEL (100 Soal)</button>
+            </div>
+            <p style="color: #666; margin-top: 20px;">Setiap level memiliki 15-20 soal. Pilih "SEMUA LEVEL" untuk tes lengkap 100 soal.</p>
+        </div>
+        
+        <div class="quiz-container" id="quizContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-counter" id="questionCounter"></div>
+            
+            <div class="question-box">
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="explanation" id="explanationBox">
+                    <h4>📚 Penjelasan:</h4>
+                    <p id="explanationText"></p>
+                </div>
+            </div>
+            
+            <div class="btn-nav">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Sebelumnya</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Selanjutnya</button>
+            </div>
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="result-box">
+                <div class="score-circle">
+                    <div class="score-number" id="scoreNumber">0</div>
+                    <div class="score-label">Jawaban Benar</div>
+                </div>
+                <div class="level-result" id="levelResult"></div>
+                <p id="resultDescription"></p>
+            </div>
+            
+            <div class="stats-grid" id="statsGrid"></div>
+            
+            <div class="chart-container">
+                <canvas id="resultChart"></canvas>
+            </div>
+            
+            <div class="promo-box">
+                <h3>Itu levelmu saat ini !!</h3>
+                <p>Mau lebih mantap lagi??</p>
+                <p style="font-size: 1.3em; margin-top: 10px;">JOIN SALVO GROUP CLASS</p>
+                <a href="https://salvoonlineclass.com" target="_blank">Klik Salvoonlineclass.com</a>
+            </div>
+            
+            <button class="btn btn-primary" style="margin-top: 30px;" onclick="location.reload()">Coba Lagi</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // A1 - Beginner (16 soal)
+            {
+                level: "A1",
+                question: "She _____ to school every day.",
+                options: ["go", "goes", "going", "gone"],
+                correct: 1,
+                explanation: "Subjek 'She' adalah orang ketiga tunggal (he/she/it), sehingga verb harus ditambah -es. Simple Present Tense digunakan untuk kebiasaan (every day)."
+            },
+            {
+                level: "A1",
+                question: "I _____ a student.",
+                options: ["am", "is", "are", "be"],
+                correct: 0,
+                explanation: "Subject 'I' selalu menggunakan verb 'am'. To be (am/is/are) digunakan untuk mengidentifikasi atau mendeskripsikan seseorang."
+            },
+            {
+                level: "A1",
+                question: "They _____ playing football now.",
+                options: ["is", "are", "am", "be"],
+                correct: 1,
+                explanation: "Present Continuous Tense (is/am/are + V-ing) digunakan untuk aksi yang sedang berlangsung sekarang (now). Subjek 'They' menggunakan 'are'."
+            },
+            {
+                level: "A1",
+                question: "He _____ a book yesterday.",
+                options: ["read", "reads", "reading", "is reading"],
+                correct: 0,
+                explanation: "Simple Past Tense digunakan untuk aksi yang sudah selesai di masa lalu (yesterday). 'Read' bentuk lampau tetap 'read' (dibaca /red/)."
+            },
+            {
+                level: "A1",
+                question: "There _____ a lot of books on the table.",
+                options: ["is", "are", "am", "be"],
+                correct: 1,
+                explanation: "There is/are digunakan untuk menyatakan keberadaan. Karena 'books' jamak (banyak), gunakan 'are'."
+            },
+            {
+                level: "A1",
+                question: "My brother is _____ than me.",
+                options: ["tall", "taller", "tallest", "the tallest"],
+                correct: 1,
+                explanation: "Comparative adjective (-er) digunakan untuk membandingkan dua orang/benda. 'Taller' artinya lebih tinggi."
+            },
+            {
+                level: "A1",
+                question: "I don't have _____ money.",
+                options: ["some", "any", "a", "the"],
+                correct: 1,
+                explanation: "'Any' digunakan dalam kalimat negatif dan pertanyaan untuk noun yang tidak dapat dihitung (uncountable) atau jamak."
+            },
+            {
+                level: "A1",
+                question: "What time _____ you get up?",
+                options: ["do", "does", "is", "are"],
+                correct: 0,
+                explanation: "Simple Present Tense question menggunakan do/does. Subjek 'you' menggunakan 'do' sebelum verb utama."
+            },
+            {
+                level: "A1",
+                question: "She _____ like coffee.",
+                options: ["don't", "doesn't", "isn't", "aren't"],
+                correct: 1,
+                explanation: "Kalimat negatif Simple Present dengan subjek orang ketiga tunggal (she) menggunakan 'doesn't' (does not)."
+            },
+            {
+                level: "A1",
+                question: "Can you _____ me your pen?",
+                options: ["lend", "borrow", "lent", "borrows"],
+                correct: 0,
+                explanation: "'Lend' berarti meminjamkan (memberikan pinjaman), 'borrow' berarti meminjam (menerima pinjaman). Konteks ini meminjamkan."
+            },
+            {
+                level: "A1",
+                question: "I _____ born in 2000.",
+                options: ["is", "am", "was", "were"],
+                correct: 2,
+                explanation: "To be past tense: I/he/she/it menggunakan 'was'. Untuk tanggal lahir di masa lalu."
+            },
+            {
+                level: "A1",
+                question: "We _____ to the cinema last night.",
+                options: ["go", "goes", "went", "gone"],
+                correct: 2,
+                explanation: "Simple Past Tense dari 'go' adalah 'went' (tidak beraturan). Digunakan untuk aksi tadi malam (last night)."
+            },
+            {
+                level: "A1",
+                question: "This is _____ apple.",
+                options: ["a", "an", "the", "-"],
+                correct: 1,
+                explanation: "Artikel 'an' digunakan sebelum kata yang diawali huruf vokal (a, e, i, o, u). 'Apple' diawali dengan vokal /æ/."
+            },
+            {
+                level: "A1",
+                question: "How _____ people are there?",
+                options: ["much", "many", "old", "long"],
+                correct: 1,
+                explanation: "'How many' untuk noun yang dapat dihitung (countable) jamak. 'People' adalah countable noun."
+            },
+            {
+                level: "A1",
+                question: "I _____ in Jakarta for 5 years.",
+                options: ["live", "lives", "lived", "living"],
+                correct: 2,
+                explanation: "Simple Past Tense karena durasi sudah selesai (for 5 years di masa lalu). Jika masih berlanjut, gunakan Present Perfect Continuous."
+            },
+            {
+                level: "A1",
+                question: "The cat is _____ the table.",
+                options: ["in", "on", "at", "to"],
+                correct: 1,
+                explanation: "Preposisi 'on' digunakan untuk posisi di atas permukaan sesuatu (di atas meja)."
+            },
+            
+            // A2 - Elementary (16 soal)
+            {
+                level: "A2",
+                question: "If it rains, I _____ at home.",
+                options: ["stay", "will stay", "stayed", "would stay"],
+                correct: 1,
+                explanation: "First Conditional: If + Simple Present, will + V1. Digunakan untuk situasi nyata yang mungkin terjadi di masa depan."
+            },
+            {
+                level: "A2",
+                question: "I have _____ this movie before.",
+                options: ["see", "saw", "seen", "seeing"],
+                correct: 2,
+                explanation: "Present Perfect Tense (have/has + V3) digunakan untuk pengalaman hidup tanpa waktu spesifik. 'Seen' adalah past participle dari 'see'."
+            },
+            {
+                level: "A2",
+                question: "She _____ to the doctor when I called.",
+                options: ["goes", "went", "has gone", "had gone"],
+                correct: 3,
+                explanation: "Past Perfect Tense (had + V3) digunakan untuk aksi yang terjadi SEBELUM aksi lain di masa lalu. Pergi ke dokter dulu, baru saya telepon."
+            },
+            {
+                level: "A2",
+                question: "This is the _____ book I've ever read.",
+                options: ["interesting", "more interesting", "most interesting", "interestinger"],
+                correct: 2,
+                explanation: "Superlative adjective (the most + adj) digunakan untuk membandingkan satu hal dengan semua yang lain. 'Ever' menandakan superlative."
+            },
+            {
+                level: "A2",
+                question: "I _____ my homework yet.",
+                options: ["finish", "finished", "have finished", "haven't finished"],
+                correct: 3,
+                explanation: "'Yet' digunakan dalam Present Perfect negatif atau pertanyaan. Menunjukkan aksi belum selesai sampai sekarang."
+            },
+            {
+                level: "A2",
+                question: "We _____ each other since 2010.",
+                options: ["know", "knew", "have known", "had known"],
+                correct: 2,
+                explanation: "Present Perfect Tense dengan 'since' untuk aksi yang dimulai di masa lalu dan masih berlanjut sampai sekarang."
+            },
+            {
+                level: "A2",
+                question: "The book _____ by Shakespeare.",
+                options: ["write", "writes", "wrote", "was written"],
+                correct: 3,
+                explanation: "Passive Voice (to be + V3) digunakan karena subjek 'the book' menerima aksi, bukan melakukan aksi."
+            },
+            {
+                level: "A2",
+                question: "I look forward _____ you soon.",
+                options: ["see", "to see", "seeing", "to seeing"],
+                correct: 3,
+                explanation: "Frasa 'look forward to' selalu diikuti by gerund (V-ing). 'To' di sini adalah preposisi, bukan infinitive."
+            },
+            {
+                level: "A2",
+                question: "She asked me where I _____ from.",
+                options: ["am", "was", "were", "be"],
+                correct: 1,
+                explanation: "Reported Speech: jika main clause past tense (asked), subordinate clause juga berubah ke past. 'Where are you from?' menjadi 'where I was from'."
+            },
+            {
+                level: "A2",
+                question: "You _____ smoke here. It's prohibited.",
+                options: ["can", "must", "mustn't", "don't have to"],
+                correct: 2,
+                explanation: "'Mustn't' berarti dilarang/verboden, bukan 'don't have to' (tidak perlu). Larangan yang kuat."
+            },
+            {
+                level: "A2",
+                question: "I wish I _____ more time.",
+                options: ["have", "had", "has", "would have"],
+                correct: 1,
+                explanation: "Wish + Simple Past digunakan untuk keinginan di masa sekarang yang tidak terwujud (unreal present). Saya ingin punya waktu (tapi tidak punya)."
+            },
+            {
+                level: "A2",
+                question: "By next year, I _____ my degree.",
+                options: ["finish", "will finish", "will have finished", "am finishing"],
+                correct: 2,
+                explanation: "Future Perfect Tense (will have + V3) digunakan untuk aksi yang akan selesai pada titik waktu tertentu di masa depan (by next year)."
+            },
+            {
+                level: "A2",
+                question: "The house _____ built in 1990.",
+                options: ["is", "was", "were", "been"],
+                correct: 1,
+                explanation: "Passive Voice Simple Past. Subjek tunggal (the house) menggunakan 'was + V3' untuk aksi di masa lalu."
+            },
+            {
+                level: "A2",
+                question: "I _____ rather stay home tonight.",
+                options: ["would", "will", "had", "have"],
+                correct: 0,
+                explanation: "'Would rather' digunakan untuk menyatakan preferensi lebih suka melakukan sesuatu."
+            },
+            {
+                level: "A2",
+                question: "Not only _____ late, but he also forgot the book.",
+                options: ["he is", "is he", "he was", "was he"],
+                correct: 3,
+                explanation: "Inversion: 'Not only' di awal kalimat memerlukan subject-verb inversion (pembalikan). 'Not only was he late' (bukan 'he was')."
+            },
+            {
+                level: "A2",
+                question: "They _____ be at home. The lights are off.",
+                options: ["must", "can't", "might", "should"],
+                correct: 1,
+                explanation: "Modal untuk deduksi negatif: 'can't' berarti mustahil/tidak mungkin. Lampu mati = mustahil mereka di rumah."
+            },
+            
+            // B1 - Intermediate (17 soal)
+            {
+                level: "B1",
+                question: "I _____ for two hours when she arrived.",
+                options: ["wait", "was waiting", "had been waiting", "have waited"],
+                correct: 2,
+                explanation: "Past Perfect Continuous (had been + V-ing) untuk aksi yang berlangsung lama SEBELUM aksi lain di masa lalu. Sudah nunggu 2 jam sebelum dia datang."
+            },
+            {
+                level: "B1",
+                question: "Had I known the truth, I _____ differently.",
+                options: ["would act", "would have acted", "will act", "acted"],
+                correct: 1,
+                explanation: "Third Conditional: If + Past Perfect, would have + V3. Inversion 'Had I known' = 'If I had known'. Menyesal di masa lalu."
+            },
+            {
+                level: "B1",
+                question: "The project _____ by the end of next month.",
+                options: ["completes", "will complete", "will have been completed", "is completing"],
+                correct: 2,
+                explanation: "Future Perfect Passive (will have been + V3) untuk aksi pasif yang akan selesai pada waktu tertentu di masa depan."
+            },
+            {
+                level: "B1",
+                question: "Seldom _____ such a beautiful sunset.",
+                options: ["I saw", "saw I", "have I seen", "I have seen"],
+                correct: 2,
+                explanation: "Inversion dengan negative adverb 'Seldom' di awal kalimat: auxiliary verb (have) didahulukan sebelum subject (I)."
+            },
+            {
+                level: "B1",
+                question: "I suggested that he _____ earlier.",
+                options: ["comes", "came", "come", "coming"],
+                correct: 2,
+                explanation: "Subjunctive mood setelah 'suggest': menggunakan bare infinitive (come tanpa to) meskipun subject orang ketiga tunggal."
+            },
+            {
+                level: "B1",
+                question: "No sooner _____ the door than the phone rang.",
+                options: ["I closed", "did I close", "had I closed", "I had closed"],
+                correct: 2,
+                explanation: "Inversion dengan 'No sooner...than': menggunakan Past Perfect (had I closed) karena aksi pertama lebih dulu sebelum aksi kedua (rang)."
+            },
+            {
+                level: "B1",
+                question: "It's high time we _____ home.",
+                options: ["go", "went", "gone", "going"],
+                correct: 1,
+                explanation: "'It's high time' + Simple Past meskipun maknanya sekarang, menunjukkan urgensi/seharusnya sudah."
+            },
+            {
+                level: "B1",
+                question: "He denied _____ the money.",
+                options: ["steal", "to steal", "stealing", "stolen"],
+                correct: 2,
+                explanation: "Verb 'deny' selalu diikuti gerund (V-ing). Menolak telah melakukan sesuatu."
+            },
+            {
+                level: "B1",
+                question: "If only I _____ harder at school!",
+                options: ["study", "studied", "had studied", "have studied"],
+                correct: 2,
+                explanation: "'If only' + Past Perfect untuk penyesalan di masa lalu. Seandainya dulu saya belajar lebih keras (tapi tidak)!"
+            },
+            {
+                level: "B1",
+                question: "The more you practice, _____ you become.",
+                options: ["the more confident", "more confident", "the confident", "confident"],
+                correct: 0,
+                explanation: "Correlative comparison: 'The + comparative..., the + comparative' (semakin... semakin...)."
+            },
+            {
+                level: "B1",
+                question: "I _____ prefer if you didn't smoke here.",
+                options: ["would", "had", "will", "have"],
+                correct: 0,
+                explanation: "'Would prefer' untuk permintaan sopan/Preferensi halus. 'Would prefer if + Past Simple'."
+            },
+            {
+                level: "B1",
+                question: "She's used _____ alone.",
+                options: ["to live", "to living", "living", "live"],
+                correct: 1,
+                explanation: "'Be used to' (terbiasa) diikuti noun/gerund (V-ing). Beda dengan 'used to' (dulu biasa) yang diikuti V1."
+            },
+            {
+                level: "B1",
+                question: "Hardly _____ when the accident happened.",
+                options: ["had he arrived", "he had arrived", "he arrived", "did he arrive"],
+                correct: 0,
+                explanation: "Inversion dengan 'Hardly...when': menggunakan Past Perfect dengan pembalikan subject-auxiliary."
+            },
+            {
+                level: "B1",
+                question: "I _____ my phone. I can't find it anywhere.",
+                options: ["lose", "lost", "have lost", "am losing"],
+                correct: 2,
+                explanation: "Present Perfect untuk aksi di masa lalu yang hasilnya masih terlihat sekarang (sekarang tidak punya HP)."
+            },
+            {
+                level: "B1",
+                question: "They _____ to have missed the train.",
+                options: ["seem", "seems", "seemed", "are seeming"],
+                correct: 0,
+                explanation: "'Seem to have + V3' untuk dugaan/deduksi tentang aksi yang sudah terjadi di masa lalu."
+            },
+            {
+                level: "B1",
+                question: "Not until _____ did I understand the problem.",
+                options: ["he explained", "he explains", "did he explain", "he had explained"],
+                correct: 0,
+                explanation: "Inversion dengan 'Not until': subject-verb normal setelah not until clause, inversion terjadi di main clause (did I understand)."
+            },
+            {
+                level: "B1",
+                question: "I _____ have arrived earlier, but I got stuck in traffic.",
+                options: ["would", "should", "could", "might"],
+                correct: 2,
+                explanation: "'Could have + V3' untuk kemampuan/peluang di masa lalu yang tidak terwujud karena halangan."
+            },
+            
+            // B2 - Upper-Intermediate (17 soal)
+            {
+                level: "B2",
+                question: "Were she to apologize, I _____ her.",
+                options: ["forgive", "would forgive", "will forgive", "would have forgiven"],
+                correct: 1,
+                explanation: "Second Conditional Inversion: 'Were she to apologize' = 'If she were to apologize'. Unreal present/future."
+            },
+            {
+                level: "B2",
+                question: "It's imperative that he _____ on time.",
+                options: ["arrives", "arrive", "arrived", "has arrived"],
+                correct: 1,
+                explanation: "Subjunctive mood setelah 'imperative/necessary/important': menggunakan bare infinitive (arrive tanpa -s)."
+            },
+            {
+                level: "B2",
+                question: "I resent _____ treated like a child.",
+                options: ["being", "to be", "be", "been"],
+                correct: 0,
+                explanation: "Verb 'resent' diikuti gerund. Passive gerund (being + V3) karena subjek menerima aksi."
+            },
+            {
+                level: "B2",
+                question: "Little _____ that he was being watched.",
+                options: ["he knew", "did he know", "he knows", "does he know"],
+                correct: 1,
+                explanation: "Inversion dengan 'Little' (negative meaning) di awal: auxiliary did sebelum subject he."
+            },
+            {
+                level: "B2",
+                question: "But for your help, I _____ the exam.",
+                options: ["fail", "would fail", "would have failed", "had failed"],
+                correct: 2,
+                explanation: "'But for' (tanpa/kecuali) menggantikan Third Conditional. 'But for your help' = 'If it hadn't been for your help'."
+            },
+            {
+                level: "B2",
+                question: "The suspect denied _____ at the scene.",
+                options: ["to be", "being", "was", "be"],
+                correct: 1,
+                explanation: "Passive gerund setelah 'deny': deny + being + V3 (menolak telah berada di lokasi)."
+            },
+            {
+                level: "B2",
+                question: "Only after _____ the letter did she understand.",
+                options: ["reading", "read", "had read", "she read"],
+                correct: 0,
+                explanation: "Inversion dengan 'Only after + gerund/Noun': auxiliary didahulukan di main clause (did she understand)."
+            },
+            {
+                level: "B2",
+                question: "I _____ rather you didn't tell anyone.",
+                options: ["would", "had", "have", "will"],
+                correct: 0,
+                explanation: "'Would rather + clause' menggunakan Past Simple (didn't tell) untuk permintaan sopan tentang preferensi orang lain."
+            },
+            {
+                level: "B2",
+                question: "Under no circumstances _____ the door.",
+                options: ["open", "you open", "should you open", "you should open"],
+                correct: 2,
+                explanation: "Inversion dengan 'Under no circumstances' (negative phrase): modal should didahulukan sebelum subject."
+            },
+            {
+                level: "B2",
+                question: "He _____ have stolen the money, but I'm not sure.",
+                options: ["must", "should", "might", "can"],
+                correct: 2,
+                explanation: "'Might have + V3' untuk spekulasi/dugaan lemah tentang masa lalu (tidak yakin)."
+            },
+            {
+                level: "B2",
+                question: "I can't help _____ about her.",
+                options: ["worry", "to worry", "worrying", "worried"],
+                correct: 2,
+                explanation: "Idiom 'can't help' selalu diikuti gerund (V-ing): tidak bisa tidak melakukan sesuatu."
+            },
+            {
+                level: "B2",
+                question: "Had I not seen it myself, I _____ it.",
+                options: ["won't believe", "wouldn't believe", "wouldn't have believed", "didn't believe"],
+                correct: 2,
+                explanation: "Third Conditional Inversion: 'Had I not seen' = 'If I hadn't seen'. Wouldn't have believed untuk unreal past."
+            },
+            {
+                level: "B2",
+                question: "It's time the children _____ to bed.",
+                options: ["go", "went", "gone", "going"],
+                correct: 1,
+                explanation: "'It's time + subject + Simple Past' untuk menyatakan seharusnya sudah dilakukan sekarang."
+            },
+            {
+                level: "B2",
+                question: "She's busy _____ for the exam.",
+                options: ["prepare", "to prepare", "preparing", "prepared"],
+                correct: 2,
+                explanation: "'Be busy' selalu diikuti gerund (V-ing): sedang sibuk melakukan sesuatu."
+            },
+            {
+                level: "B2",
+                question: "Not once _____ him lose his temper.",
+                options: ["I saw", "did I see", "have I seen", "I have seen"],
+                correct: 2,
+                explanation: "Inversion dengan 'Not once' (negative frequency): Present Perfect untuk pengalaman hidup."
+            },
+            {
+                level: "B2",
+                question: "I object _____ treated unfairly.",
+                options: ["to be", "to being", "being", "be"],
+                correct: 1,
+                explanation: "'Object to' (keberatan terhadap) diikuti gerund. Passive gerund (being treated) karena subjek menerima perlakuan."
+            },
+            {
+                level: "B2",
+                question: "Should you _____ any problems, call me immediately.",
+                options: ["have", "had", "having", "has"],
+                correct: 0,
+                explanation: "First Conditional Inversion: 'Should you have' = 'If you should have'. Formal conditional."
+            },
+            
+            // C1 - Advanced (17 soal)
+            {
+                level: "C1",
+                question: "Were it not for the rain, we _____ the picnic.",
+                options: ["would enjoy", "would have enjoyed", "will enjoy", "enjoyed"],
+                correct: 1,
+                explanation: "Second Conditional Inversion dengan 'Were it not for' (jika bukan karena): unreal past situation."
+            },
+            {
+                level: "C1",
+                question: "Scarcely _____ the house when it started to rain.",
+                options: ["did I leave", "had I left", "I left", "I had left"],
+                correct: 1,
+                explanation: "Inversion 'Scarcely...when': Past Perfect (had left) karena aksi pertama lebih dulu sebelum aksi kedua."
+            },
+            {
+                level: "C1",
+                question: "I demand that he _____ punished.",
+                options: ["is", "be", "been", "being"],
+                correct: 1,
+                explanation: "Subjunctive mood setelah 'demand': bare infinitive/be tanpa to meski passive voice."
+            },
+            {
+                level: "C1",
+                question: "_____ the alarm, we would have been trapped.",
+                options: ["Had we not heard", "Did we not hear", "If we didn't hear", "We hadn't heard"],
+                correct: 0,
+                explanation: "Third Conditional Inversion: 'Had we not heard' = 'If we had not heard'. Ellipsis 'if' dengan pembalikan."
+            },
+            {
+                level: "C1",
+                question: "There's no point _____ about it now.",
+                options: ["worry", "to worry", "in worrying", "worried"],
+                correct: 2,
+                explanation: "'There's no point in + gerund' atau 'There's no point + gerund' (in bisa dihilangkan): tidak ada gunanya."
+            },
+            {
+                level: "C1",
+                question: "I regret _____ you that you've failed.",
+                options: ["informing", "to inform", "inform", "informed"],
+                correct: 1,
+                explanation: "'Regret to' untuk menyatakan penyesalan saat memberi kabar buruk yang akan dilakukan. 'Regret + V-ing' untuk penyesalan atas aksi yang sudah dilakukan."
+            },
+            {
+                level: "C1",
+                question: "So intense _____ that we couldn't continue.",
+                options: ["was the heat", "the heat was", "is the heat", "the heat is"],
+                correct: 0,
+                explanation: "Inversion dengan 'So + adjective' di awal kalimat: auxiliary was didahulukan sebelum subject the heat."
+            },
+            {
+                level: "C1",
+                question: "I can't stand _____ when I'm speaking.",
+                options: ["interrupt", "to interrupt", "being interrupted", "interrupted"],
+                correct: 2,
+                explanation: "'Can't stand' diikuti gerund. Passive gerund (being interrupted) karena subjek menerima aksi (dipotong bicaranya)."
+            },
+            {
+                level: "C1",
+                question: "_____ he rich, he would buy the house.",
+                options: ["Were", "Was", "Is", "Had"],
+                correct: 0,
+                explanation: "Subjunctive Second Conditional Inversion: 'Were he rich' = 'If he were rich'. Subjunctive were untuk semua subject."
+            },
+            {
+                level: "C1",
+                question: "It's essential that every applicant _____ references.",
+                options: ["provides", "provide", "provided", "providing"],
+                correct: 1,
+                explanation: "Subjunctive mood setelah 'essential': bare infinitive (provide tanpa -s) meski subject tunggal."
+            },
+            {
+                level: "C1",
+                question: "I remember _____ the door, but I'm not sure.",
+                options: ["locking", "to lock", "lock", "locked"],
+                correct: 0,
+                explanation: "'Remember + V-ing' untuk mengingat aksi yang sudah dilakukan di masa lalu."
+            },
+            {
+                level: "C1",
+                question: "Never before _____ such a challenging task.",
+                options: ["I faced", "did I face", "have I faced", "I have faced"],
+                correct: 2,
+                explanation: "Inversion dengan 'Never before': Present Perfect untuk pengalaman hidup sampai sekarang."
+            },
+            {
+                level: "C1",
+                question: "The meeting _____ for next week has been cancelled.",
+                options: ["schedule", "scheduled", "scheduling", "to schedule"],
+                correct: 1,
+                explanation: "Past Participle sebagai adjective (scheduled = yang dijadwalkan) menjelaskan noun the meeting."
+            },
+            {
+                level: "C1",
+                question: "I would sooner _____ than apologize to him.",
+                options: ["resign", "to resign", "resigning", "resigned"],
+                correct: 0,
+                explanation: "'Would sooner' (lebih suka) diikuti bare infinitive (V1 tanpa to), sama seperti 'would rather'."
+            },
+            {
+                level: "C1",
+                question: "Only when _____ the truth will she forgive him.",
+                options: ["he tells", "does he tell", "he told", "will he tell"],
+                correct: 0,
+                explanation: "Inversion dengan 'Only when': subject-verb normal di after clause, inversion (will she) di main clause."
+            },
+            {
+                level: "C1",
+                question: "I stopped _____ cigarettes last year.",
+                options: ["smoke", "to smoke", "smoking", "smoked"],
+                correct: 2,
+                explanation: "'Stop + V-ing' untuk berhenti melakukan kebiasaan. 'Stop to + V1' untuk berhenti agar bisa melakukan aksi lain."
+            },
+            {
+                level: "C1",
+                question: "Such _____ the case, we have no choice.",
+                options: ["is", "was", "being", "been"],
+                correct: 2,
+                explanation: "Absolute construction dengan 'Such': 'Such being the case' (karena demikianlah keadaannya/oleh karena itu)."
+            },
+            
+            // C2 - Mastery (17 soal)
+            {
+                level: "C2",
+                question: "_____ I known the consequences, I would never have agreed.",
+                options: ["Had", "Have", "Did", "Would"],
+                correct: 0,
+                explanation: "Third Conditional Inversion tanpa 'if': 'Had I known' = 'If I had known'. Penggunaan had sebagai auxiliary."
+            },
+            {
+                level: "C2",
+                question: "Rarely _____ a philosopher make such an impact.",
+                options: ["does", "do", "did", "has"],
+                correct: 2,
+                explanation: "Inversion dengan 'Rarely' untuk general truth di masa lalu: auxiliary did sebelum subject a philosopher."
+            },
+            {
+                level: "C2",
+                question: "I resent _____ asked to wait.",
+                options: ["to be", "being", "be", "been"],
+                correct: 1,
+                explanation: "Passive gerund setelah 'resent': resent + being + V3 (keberatan telah diminta menunggu)."
+            },
+            {
+                level: "C2",
+                question: "Were he to arrive late, there _____ chaos.",
+                options: ["will be", "would be", "would have been", "is"],
+                correct: 1,
+                explanation: "Second Conditional Formal Inversion: 'Were he to arrive' (jika ia tiba) = 'If he were to arrive'."
+            },
+            {
+                level: "C2",
+                question: "Not for a moment _____ doubting his integrity.",
+                options: ["I was", "was I", "did I", "I did"],
+                correct: 1,
+                explanation: "Inversion dengan negative phrase 'Not for a moment': past continuous (was doubting) dengan pembalikan."
+            },
+            {
+                level: "C2",
+                question: "It's high time the government _____ action.",
+                options: ["take", "took", "taken", "taking"],
+                correct: 1,
+                explanation: "'It's high time + subject + Simple Past' untuk urgensi/seharusnya sudah dilakukan oleh pihak lain."
+            },
+            {
+                level: "C2",
+                question: "_____ she to leave now, she would miss the ceremony.",
+                options: ["Were", "Was", "If", "Should"],
+                correct: 0,
+                explanation: "Second Conditional Inversion dengan 'to': 'Were she to leave' = 'If she were to leave'. Formal structure."
+            },
+            {
+                level: "C2",
+                question: "I can't recall _____ such an unusual request.",
+                options: ["ever to receive", "ever receiving", "to ever receive", "ever received"],
+                correct: 1,
+                explanation: "'Recall' diikuti gerund. 'Ever' diletakkan di tengah untuk penekanan pengalaman hidup."
+            },
+            {
+                level: "C2",
+                question: "Only by working hard _____ succeed.",
+                options: ["you will", "will you", "you would", "would you"],
+                correct: 1,
+                explanation: "Inversion dengan 'Only by + gerund': auxiliary will didahulukan sebelum subject you."
+            },
+            {
+                level: "C2",
+                question: "Much as I admire him, I _____ his recent decisions.",
+                options: ["agree with", "disagree with", "can't agree with", "agree to"],
+                correct: 2,
+                explanation: "Concessive clause 'Much as' (meskipun sangat): 'Much as I admire him' = 'Although I admire him much'."
+            },
+            {
+                level: "C2",
+                question: "The contract _____ signed, the deal was finalized.",
+                options: ["being", "having been", "has been", "was"],
+                correct: 1,
+                explanation: "Perfect participle absolute construction: 'Having been signed' (setelah ditandatangani) menunjukkan aksi selesai sebelum aksi utama."
+            },
+            {
+                level: "C2",
+                question: "Seldom if ever _____ such dedication.",
+                options: ["I witnessed", "did I witness", "have I witnessed", "I have witnessed"],
+                correct: 2,
+                explanation: "Double negative 'Seldom if ever' (hampir tidak pernah): Present Perfect untuk pengalaman hidup yang langka."
+            },
+            {
+                level: "C2",
+                question: "I would just as soon _____ as drive in this traffic.",
+                options: ["walk", "to walk", "walking", "walked"],
+                correct: 0,
+                explanation: "'Would just as soon' (sama saja/lebih suka) diikuti bare infinitive (V1), sama dengan 'would rather'."
+            },
+            {
+                level: "C2",
+                question: "_____ for the quick response, the damage would have been severe.",
+                options: ["Had it not been", "If it not be", "Should it not be", "Were it not"],
+                correct: 0,
+                explanation: "Third Conditional Inversion: 'Had it not been for' = 'If it had not been for'. Perfect conditional."
+            },
+            {
+                level: "C2",
+                question: "Not until the final chapter _____ the mystery.",
+                options: ["we solve", "do we solve", "did we solve", "we solved"],
+                correct: 2,
+                explanation: "Inversion dengan 'Not until + noun': Past Simple dengan pembalikan auxiliary did sebelum subject we."
+            },
+            {
+                level: "C2",
+                question: "I regret _____ that the event has been cancelled.",
+                options: ["saying", "to say", "say", "having said"],
+                correct: 1,
+                explanation: "'Regret to say/inform/announce' untuk memberitahu kabar buruk yang akan disampaikan."
+            },
+            {
+                level: "C2",
+                question: "Such was the confusion _____ no one knew what to do.",
+                options: ["that", "as", "which", "when"],
+                correct: 0,
+                explanation: "'Such...that' construction untuk result clause (such...sehingga). Confusion begitu besar sehingga..."
+            }
+        ];
+
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let chartInstance = null;
+
+        function startQuiz(level) {
+            if (level === 'ALL') {
+                currentQuestions = [...questions];
+            } else {
+                currentQuestions = questions.filter(q => q.level === level);
+            }
+            
+            // Acak soal
+            currentQuestions.sort(() => Math.random() - 0.5);
+            
+            answers = new Array(currentQuestions.length).fill(null);
+            
+            document.getElementById('levelSelection').classList.add('hidden');
+            document.getElementById('quizContainer').style.display = 'block';
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById('questionText').textContent = `${currentIndex + 1}. ${q.question}`;
+            document.getElementById('questionCounter').textContent = `Soal ${currentIndex + 1} dari ${currentQuestions.length}`;
+            document.getElementById('progressFill').style.width = `${((currentIndex + 1) / currentQuestions.length) * 100}%`;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                if (answers[currentIndex] === idx) div.classList.add('selected');
+                if (answers[currentIndex] !== null) {
+                    if (idx === q.correct) div.classList.add('correct');
+                    else if (answers[currentIndex] === idx) div.classList.add('wrong');
+                }
+                
+                div.innerHTML = `<span class="option-letter">${String.fromCharCode(65 + idx)}</span> ${opt}`;
+                div.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(div);
+            });
+            
+            // Show explanation if answered
+            const expBox = document.getElementById('explanationBox');
+            if (answers[currentIndex] !== null) {
+                expBox.classList.add('show');
+                document.getElementById('explanationText').textContent = q.explanation;
+            } else {
+                expBox.classList.remove('show');
+            }
+            
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').textContent = 
+                currentIndex === currentQuestions.length - 1 ? 'Selesai' : 'Selanjutnya';
+        }
+
+        function selectOption(index) {
+            if (answers[currentIndex] !== null) return; // Already answered
+            
+            answers[currentIndex] = index;
+            const q = currentQuestions[currentIndex];
+            
+            // Update UI
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, idx) => {
+                opt.classList.remove('selected');
+                if (idx === q.correct) opt.classList.add('correct');
+                else if (idx === index) opt.classList.add('wrong');
+            });
+            
+            // Show explanation
+            document.getElementById('explanationBox').classList.add('show');
+            document.getElementById('explanationText').textContent = q.explanation;
+        }
+
+        function nextQuestion() {
+            if (currentIndex < currentQuestions.length - 1) {
+                currentIndex++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            
+            // Hitung skor per level
+            const levelStats = {};
+            let totalCorrect = 0;
+            
+            currentQuestions.forEach((q, idx) => {
+                if (!levelStats[q.level]) {
+                    levelStats[q.level] = { total: 0, correct: 0 };
+                }
+                levelStats[q.level].total++;
+                if (answers[idx] === q.correct) {
+                    levelStats[q.level].correct++;
+                    totalCorrect++;
+                }
+            });
+            
+            // Tampilkan skor total
+            document.getElementById('scoreNumber').textContent = 
+                `${totalCorrect}/${currentQuestions.length}`;
+            
+            // Tentukan level
+            let determinedLevel = '';
+            let description = '';
+            
+            const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            for (let level of levels) {
+                if (levelStats[level]) {
+                    const percentage = (levelStats[level].correct / levelStats[level].total) * 100;
+                    if (percentage >= 70) {
+                        determinedLevel = level;
+                    }
+                }
+            }
+            
+            if (!determinedLevel) determinedLevel = 'A1';
+            
+            const levelNames = {
+                'A1': 'Beginner (A1)',
+                'A2': 'Elementary (A2)',
+                'B1': 'Intermediate (B1)',
+                'B2': 'Upper-Intermediate (B2)',
+                'C1': 'Advanced (C1)',
+                'C2': 'Mastery (C2)'
+            };
+            
+            document.getElementById('levelResult').textContent = `Level Anda: ${levelNames[determinedLevel]}`;
+            
+            // Deskripsi level
+            const descriptions = {
+                'A1': 'Anda memahami grammar dasar bahasa Inggris. Fokus pada tenses sederhana dan struktur kalimat dasar.',
+                'A2': 'Anda menguasai grammar fundamental. Sudah bisa membuat kalimat kompleks dan memahami conditional dasar.',
+                'B1': 'Anda memiliki kemampuan grammar intermediate dengan baik. Mampu menggunakan perfect tenses dan passive voice.',
+                'B2': 'Anda menguasai grammar upper-intermediate dengan baik. Sudah familiar dengan inversion dan advanced conditionals.',
+                'C1': 'Anda memiliki kemampuan grammar advanced yang kuat. Menguasai subjunctive, complex inversions, dan nuansa grammar tingkat tinggi.',
+                'C2': 'Anda menguasai grammar bahasa Inggris secara komprehensif. Level native-like proficiency dalam struktur grammar.'
+            };
+            document.getElementById('resultDescription').textContent = descriptions[determinedLevel];
+            
+            // Stats grid
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = '';
+            
+            levels.forEach(level => {
+                if (levelStats[level]) {
+                    const percentage = Math.round((levelStats[level].correct / levelStats[level].total) * 100);
+                    const div = document.createElement('div');
+                    div.className = 'stat-card';
+                    div.innerHTML = `
+                        <h4>Level ${level}</h4>
+                        <p>${levelStats[level].correct}/${levelStats[level].total} (${percentage}%)</p>
+                    `;
+                    statsGrid.appendChild(div);
+                }
+            });
+            
+            // Buat grafik
+            createChart(levelStats);
+        }
+
+        function createChart(levelStats) {
+            const ctx = document.getElementById('resultChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            const data = levels.map(l => levelStats[l] ? 
+                Math.round((levelStats[l].correct / levelStats[l].total) * 100) : 0);
+            
+            const colors = [
+                'rgba(76, 175, 80, 0.8)',
+                'rgba(139, 195, 74, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(255, 152, 0, 0.8)',
+                'rgba(255, 87, 34, 0.8)',
+                'rgba(233, 30, 99, 0.8)'
+            ];
+            
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: levels,
+                    datasets: [{
+                        label: 'Persentase Jawaban Benar (%)',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Performa per Level',
+                            font: {
+                                size: 18
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
